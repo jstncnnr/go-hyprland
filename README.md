@@ -13,7 +13,7 @@ https://wiki.hyprland.org/IPC/#events-list
 
 It is highly recommended you use a cancelable context so the socket can be cleaned up.
 
-Please see [examples/dynamic-windows/main.go]() for a more in-depth example.
+Please see [examples/dynamic-windows/main.go](examples/dynamic-windows/main.go) for a more in-depth example.
 
 ```go
 import "github.com/jstncnnr/go-hyprland/hypr/events"
@@ -38,7 +38,7 @@ if err := client.Listen(context.Background()); err != nil && !errors.Is(err, con
 This client is used to issue commands to Hyprland. It functions similarly to `hyprctl` itself.
 Most of the useful commands are implemented, however not everything is implemented yet.
 
-Please see [examples/dynamic-windows/main.go]() for a more in-depth example.
+Please see [examples/dynamic-windows/main.go](examples/dynamic-windows/main.go) for a more in-depth example.
 
 ```go
 import "github.com/jstncnnr/go-hyprland/hypr"
