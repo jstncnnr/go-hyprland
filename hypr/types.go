@@ -55,7 +55,7 @@ type Window struct {
 	Title            string    `json:"title"`
 	InitialClass     string    `json:"initialClass"`
 	InitialTitle     string    `json:"initialTitle"`
-	Pid              string    `json:"pid"`
+	Pid              int       `json:"pid"`
 	XWayland         bool      `json:"xwayland"`
 	Pinned           bool      `json:"pinned"`
 	Fullscreen       int       `json:"fullscreen"`
