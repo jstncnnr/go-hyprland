@@ -45,6 +45,10 @@ func (c *Client) RegisterListener(listener Listener) {
 }
 
 func (c *Client) Listen(ctx context.Context) error {
+	defer func(conn net.Conn) {
+		_ = conn.Close()
+	}(c.connection)
+
 	buffer := make([]byte, 1024)
 	for {
 		select {
