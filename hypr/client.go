@@ -1,6 +1,7 @@
 package hypr
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,11 +9,11 @@ import (
 	"os"
 )
 
-type Client struct {
+type client struct {
 	connection net.Conn
 }
 
-func NewClient() (*Client, error) {
+func newClient() (*client, error) {
 	runtimeDir := os.Getenv("XDG_RUNTIME_DIR")
 	if runtimeDir == "" {
 		runtimeDir = "/tmp"
@@ -29,18 +30,18 @@ func NewClient() (*Client, error) {
 		return nil, errors.New(fmt.Sprintf("Unable to open hyprland socket: %v", err))
 	}
 
-	return &Client{
+	return &client{
 		connection: conn,
 	}, nil
 }
 
-func (c *Client) Close() error {
+func (c *client) Close() error {
 	return c.connection.Close()
 }
 
 // SendRequest sends a low level request directly to the socket. This should only
 // be used when no other option is available.
-func (c *Client) SendRequest(command string) ([]byte, error) {
+func (c *client) SendRequest(command string) ([]byte, error) {
 	written, err := c.connection.Write([]byte(command))
 	if err != nil {
 		return nil, err
@@ -50,22 +51,41 @@ func (c *Client) SendRequest(command string) ([]byte, error) {
 		return nil, fmt.Errorf("expected to write %d bytes, wrote %d", len(command), written)
 	}
 
+	response := bytes.Buffer{}
+
 	buffer := make([]byte, 4096)
-	read, err := c.connection.Read(buffer)
-	if err != nil {
-		return nil, err
+	for {
+		read, err := c.connection.Read(buffer)
+		if err != nil {
+			return nil, err
+		}
+
+		response.Write(buffer[:read])
+
+		if read != 4096 {
+			break
+		}
 	}
 
-	return buffer[:read], nil
+	return response.Bytes(), nil
 }
 
 // SendJSONRequest sends a low level request directly to the socket and requests a
 // JSON response. This should only be used when no other option is available.
-func (c *Client) SendJSONRequest(command string) ([]byte, error) {
+func (c *client) SendJSONRequest(command string) ([]byte, error) {
 	return c.SendRequest("j/" + command)
 }
 
-func (c *Client) GetMonitors() ([]Monitor, error) {
+func GetMonitors() ([]Monitor, error) {
+	c, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
 	resp, err := c.SendJSONRequest("monitors")
 	if err != nil {
 		return nil, err
@@ -80,7 +100,16 @@ func (c *Client) GetMonitors() ([]Monitor, error) {
 	return monitors, nil
 }
 
-func (c *Client) GetWorkspaces() ([]Workspace, error) {
+func GetWorkspaces() ([]Workspace, error) {
+	c, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
 	resp, err := c.SendJSONRequest("workspaces")
 	if err != nil {
 		return nil, err
@@ -95,7 +124,16 @@ func (c *Client) GetWorkspaces() ([]Workspace, error) {
 	return workspaces, nil
 }
 
-func (c *Client) GetWindows() ([]Window, error) {
+func GetWindows() ([]Window, error) {
+	c, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
 	resp, err := c.SendJSONRequest("clients")
 	if err != nil {
 		return nil, err
@@ -110,7 +148,16 @@ func (c *Client) GetWindows() ([]Window, error) {
 	return windows, nil
 }
 
-func (c *Client) GetActiveWorkspace() (*Workspace, error) {
+func GetActiveWorkspace() (*Workspace, error) {
+	c, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
 	resp, err := c.SendJSONRequest("activeworkspace")
 	if err != nil {
 		return nil, err
@@ -125,7 +172,16 @@ func (c *Client) GetActiveWorkspace() (*Workspace, error) {
 	return workspace, nil
 }
 
-func (c *Client) GetActiveWindow() (*Window, error) {
+func GetActiveWindow() (*Window, error) {
+	c, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
 	resp, err := c.SendJSONRequest("activewindow")
 	if err != nil {
 		return nil, err
@@ -140,7 +196,16 @@ func (c *Client) GetActiveWindow() (*Window, error) {
 	return window, nil
 }
 
-func (c *Client) GetDeviceTable() (*DeviceTable, error) {
+func GetDeviceTable() (*DeviceTable, error) {
+	c, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
 	resp, err := c.SendJSONRequest("devices")
 	if err != nil {
 		return nil, err
