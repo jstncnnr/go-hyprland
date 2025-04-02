@@ -44,7 +44,7 @@ var parsers = map[string]func([]string) (Event, error){
 	"moveoutofgroup":     parseMoveOutOfGroupEvent,
 	"ignoregrouplock":    parseIgnoreGroupLockEvent,
 	"lockgroups":         parseLockGroupsEvent,
-	"configreloadaed":    parseConfigReloadedEvent,
+	"configreloaded":     parseConfigReloadedEvent,
 	"pin":                parsePinEvent,
 	"minimized":          parseMinimizedEvent,
 }
@@ -367,7 +367,7 @@ func parseToggleGroupEvent(args []string) (Event, error) {
 
 	return ToggleGroupEvent{
 		GroupState:      state,
-		WindowAddresses: strings.Split(args[1], ","),
+		WindowAddresses: args[1:],
 	}, nil
 }
 
