@@ -219,3 +219,195 @@ func GetDeviceTable() (*DeviceTable, error) {
 
 	return devices, nil
 }
+
+// Dispatch issues a dispatch to call a keybind dispatcher.
+// See https://wiki.hyprland.org/Configuring/Dispatchers for
+// a list of dispatchers.
+//
+// This is functionally equivalent to running
+// hyprctl dispatch {command}
+func Dispatch(command string) error {
+	c, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
+	resp, err := c.SendRequest("dispatch " + command)
+	if err != nil {
+		return err
+	}
+
+	if string(resp) != "ok" {
+		return errors.New(string(resp))
+	}
+
+	return nil
+}
+
+// Keyword issues a keyword to call a config keyword dynamically.
+//
+// This is functionally equivalent to running
+// hyprctl keyword {command}
+func Keyword(command string) error {
+	c, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
+	resp, err := c.SendRequest("keyword " + command)
+	if err != nil {
+		return err
+	}
+
+	if string(resp) != "ok" {
+		return errors.New(string(resp))
+	}
+
+	return nil
+}
+
+// Reload issues a reloada to force reload the
+// config.
+//
+// This is functionally equivalent to running
+// hyprctl reload
+func Reload() error {
+	c, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
+	resp, err := c.SendRequest("reload")
+	if err != nil {
+		return err
+	}
+
+	if string(resp) != "ok" {
+		return errors.New(string(resp))
+	}
+
+	return nil
+}
+
+// SetCursor sets the cursor theme and reloads the
+// cursor manager. Will set the theme for everything
+// except GTK, because GTK.
+//
+// This is functionally equivalent to running
+// hyprctl setcursor {command}
+func SetCursor(command string) error {
+	c, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
+	resp, err := c.SendRequest("setcursor " + command)
+	if err != nil {
+		return err
+	}
+
+	if string(resp) != "ok" {
+		return errors.New(string(resp))
+	}
+
+	return nil
+}
+
+// SwitchXkbLayout sets the xkb layout index for a keyboard.
+//
+// cmd is either "next" or "prev" or an index to a layout
+// defined in your Hyprland config.
+//
+// device can either be the name of a device from hyprctl devices
+// or "current" or "all". Current is the main keyboard from devices.
+//
+// This is equivalent to calling hyprctl switchxkblayout {device} {cmd}
+func SwitchXkbLayout(device string, cmd string) error {
+	c, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
+	resp, err := c.SendRequest("switchxkblayout " + device + " " + cmd)
+	if err != nil {
+		return err
+	}
+
+	if string(resp) != "ok" {
+		return errors.New(string(resp))
+	}
+
+	return nil
+}
+
+// SetError sets the hyprctl error string. This will reset when
+// Hyprland's config is reloaded.
+//
+// This is equivalent to calling hyprctl seterror {color} {message}
+func SetError(color string, message string) error {
+	c, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
+	resp, err := c.SendRequest("seterror " + color + " " + message)
+	if err != nil {
+		return err
+	}
+
+	if string(resp) != "ok" {
+		return errors.New(string(resp))
+	}
+
+	return nil
+}
+
+// DisableError disables the hyprctl error string. This will reset when
+// Hyprland's config is reloaded.
+//
+// This is equivalent to calling hyprctl seterror disable
+func DisableError() error {
+	c, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	defer func(c *client) {
+		_ = c.Close()
+	}(c)
+
+	resp, err := c.SendRequest("seterror disable")
+	if err != nil {
+		return err
+	}
+
+	if string(resp) != "ok" {
+		return errors.New(string(resp))
+	}
+
+	return nil
+}
