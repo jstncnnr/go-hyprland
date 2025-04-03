@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jstncnnr/go-hyprland/hypr"
+	"github.com/jstncnnr/go-hyprland/hypr/commands"
 	"github.com/jstncnnr/go-hyprland/hypr/event"
 	"os"
 	"os/signal"
@@ -95,16 +96,28 @@ func CheckWorkspace() {
 	if len(windows) == 1 {
 		//If there is only 1 window, add reserved space on the left and right side
 		//this is useful for ultrawide monitors so you don't have one stretched window
-		_ = AddReservedSpace(workspace.Monitor, 0, 0, 865, 865)
+		err = AddReservedSpace(workspace.Monitor, 0, 0, 865, 865)
+		if err != nil {
+			fmt.Printf("Error adding reserved space: %v\n", err)
+		}
 	} else {
-		_ = RemoveReservedSpace(workspace.Monitor)
+		err = RemoveReservedSpace(workspace.Monitor)
+		if err != nil {
+			fmt.Printf("Error removing reserved space: %v\n", err)
+		}
 	}
 }
 
 func AddReservedSpace(monitor string, top, bottom, left, right int) error {
-	return hypr.Keyword(fmt.Sprintf("monitor %s,addreserved,%d,%d,%d,%d", monitor, top, bottom, left, right))
+	return hypr.NewRequest().
+		Notify(commands.IconInfo, 2000, commands.NotifyColorDefault, "Adding reserved space").
+		Keyword(fmt.Sprintf("monitor %s,addreserved,%d,%d,%d,%d", monitor, top, bottom, left, right)).
+		Send()
 }
 
 func RemoveReservedSpace(monitor string) error {
-	return hypr.Keyword(fmt.Sprintf("monitor %s,addreserved,0,0,0,0", monitor))
+	return hypr.NewRequest().
+		Notify(commands.IconInfo, 2000, commands.NotifyColorDefault, "Removing reserved space").
+		Keyword(fmt.Sprintf("monitor %s,addreserved,0,0,0,0", monitor)).
+		Send()
 }
