@@ -78,6 +78,13 @@ type MonitorRemovedEvent struct {
 	MonitorName string
 }
 
+// MonitorRemovedV2Event emitted when a monitor is removed (disconnected).
+type MonitorRemovedV2Event struct {
+	MonitorID          int
+	MonitorName        string
+	MonitorDescription string
+}
+
 // MonitorAddedEvent emitted when a monitor is added (connected).
 type MonitorAddedEvent struct {
 	MonitorName string
@@ -265,4 +272,10 @@ type PinEvent struct {
 type MinimizedEvent struct {
 	WindowAddress string
 	Minimized     bool
+}
+
+// BellEvent emitted when an app requests to ring the system bell via
+// `xdg-system-bell-v1`. Window address parameter may be empty
+type BellEvent struct {
+	WindowAddress string
 }

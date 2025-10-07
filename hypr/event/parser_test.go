@@ -14,6 +14,7 @@ var eventTests = map[string]Event{
 	"activewindowv2>>62c8246947c0":              ActiveWindowV2Event{WindowAddress: "62c8246947c0"},
 	"fullscreen>>0":                             FullscreenEvent{FullscreenMode: FullscreenExit},
 	"monitorremoved>>DP-1":                      MonitorRemovedEvent{MonitorName: "DP-1"},
+	"monitorremovedv2>>1,DP-1,Description":      MonitorRemovedV2Event{MonitorID: 1, MonitorName: "DP-1", MonitorDescription: "Description"},
 	"monitoradded>>DP-1":                        MonitorAddedEvent{MonitorName: "DP-1"},
 	"monitoraddedv2>>1,DP-1,Description":        MonitorAddedV2Event{MonitorID: 1, MonitorName: "DP-1", MonitorDescription: "Description"},
 	"createworkspace>>test":                     CreateWorkspaceEvent{WorkspaceName: "test"},
@@ -43,6 +44,8 @@ var eventTests = map[string]Event{
 	"configreloaded>>":                          ConfigReloadEvent{},
 	"pin>>62c8246947c0,1":                       PinEvent{WindowAddress: "62c8246947c0", Pinned: true},
 	"minimized>>62c8246947c0,0":                 MinimizedEvent{WindowAddress: "62c8246947c0", Minimized: false},
+	"bell>>62c8246947c0":                        BellEvent{WindowAddress: "62c8246947c0"},
+	"bell>>":                                    BellEvent{WindowAddress: ""},
 }
 
 func TestParseWithValidInput(t *testing.T) {

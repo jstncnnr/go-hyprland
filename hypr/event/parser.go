@@ -15,6 +15,7 @@ var parsers = map[string]func([]string) (Event, error){
 	"activewindowv2":     parseActiveWindowV2Event,
 	"fullscreen":         parseFullscreenEvent,
 	"monitorremoved":     parseMonitorRemovedEvent,
+	"monitorremovedv2":   parseMOnitorRemovedV2Event,
 	"monitoradded":       parseMonitorAddedEvent,
 	"monitoraddedv2":     parseMonitorAddedV2Event,
 	"createworkspace":    parseCreateWorkspaceEvent,
@@ -47,6 +48,7 @@ var parsers = map[string]func([]string) (Event, error){
 	"configreloaded":     parseConfigReloadedEvent,
 	"pin":                parsePinEvent,
 	"minimized":          parseMinimizedEvent,
+	"bell":               parseBellEvent,
 }
 
 // Parse will take the raw event string in the format
@@ -140,6 +142,19 @@ func parseFullscreenEvent(args []string) (Event, error) {
 func parseMonitorRemovedEvent(args []string) (Event, error) {
 	return MonitorRemovedEvent{
 		MonitorName: args[0],
+	}, nil
+}
+
+func parseMOnitorRemovedV2Event(args []string) (Event, error) {
+	id, err := strconv.Atoi(args[0])
+	if err != nil {
+		return nil, fmt.Errorf("error parsing monitor id: %v", err)
+	}
+
+	return MonitorRemovedV2Event{
+		MonitorID:          id,
+		MonitorName:        args[1],
+		MonitorDescription: args[2],
 	}, nil
 }
 
@@ -430,5 +445,11 @@ func parseMinimizedEvent(args []string) (Event, error) {
 	return MinimizedEvent{
 		WindowAddress: args[0],
 		Minimized:     state == 1,
+	}, nil
+}
+
+func parseBellEvent(args []string) (Event, error) {
+	return BellEvent{
+		WindowAddress: args[0],
 	}, nil
 }
